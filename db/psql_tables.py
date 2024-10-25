@@ -71,3 +71,34 @@ class PromptTemplatesGroupsMapping(Base):
     id: Mapped[str] = mapped_column(primary_key=True, index=True)
     group_id: Mapped[str] = mapped_column(index=True)
     template_id: Mapped[str] = mapped_column(index=True)
+
+
+class Reports(Base):
+    __tablename__ = "reports"
+    __table_args__ = {"schema": "public"}
+
+    id: Mapped[str] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[str]
+    base_id: Mapped[str]
+    agent_id: Mapped[str]
+    title: Mapped[str]
+    report_style: Mapped[str]
+    report_source: Mapped[str]
+    published: Mapped[bool]
+    created_at: Mapped[datetime]
+    updated_at: Mapped[datetime]
+
+
+class ReportSections(Base):
+    __tablename__ = "report_sections"
+    __table_args__ = {"schema": "public"}
+
+    id: Mapped[str] = mapped_column(primary_key=True, index=True)
+    report_id: Mapped[str]
+    title: Mapped[str]
+    content: Mapped[str]
+    order: Mapped[int]
+    guideline: Mapped[str]
+    editable: Mapped[bool]
+    created_at: Mapped[datetime]
+    updated_at: Mapped[datetime]

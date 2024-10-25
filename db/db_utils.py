@@ -1,10 +1,12 @@
 import logging
 from typing import Tuple, Union, List, Dict
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from db.common import create_rows
+from db.psql_tables import Reports, ReportSections
 from db.chat_agents import read_agent_conf_by_id, read_agent_conf
 
 logger = logging.getLogger(__name__)
+
 
 async def get_agent(psql_sess: AsyncSession, base_id: Union[str, None], agent_id: str = None,
                     agent_name: Union[str, None] = "splore") -> Tuple[dict, str, str, Union[str, None]]:
@@ -29,3 +31,36 @@ async def get_agent(psql_sess: AsyncSession, base_id: Union[str, None], agent_id
     agent_conf = await read_agent_conf_by_id(psql_sess, base_conf_cols, agent_id)
 
     return agent_conf
+
+
+async def save_report(psql_sess: AsyncSession, report: Dict = None, returning: List[str] = None):
+    """
+    This async function saves report.
+
+    Args:
+        psql_sess (AsyncSession): psql connection session.
+        report: report to save
+        returning: list of columns to return
+
+    Returns:
+        the id of the report saved
+    """
+    if not report:
+        return []
+    return await create_rows(psql_sess, Reports, [report], returning)
+
+
+async def save_report_sections(psql_sess: AsyncSession, sections: List[dict]):
+    """
+    This async function saves report.
+
+    Args:
+        psql_sess (AsyncSession): psql connection session.
+        sections: sections to save
+
+    Returns:
+        None
+    """
+    if not sections or not len(sections):
+        return None
+    return await create_rows(psql_sess, ReportSections, sections)

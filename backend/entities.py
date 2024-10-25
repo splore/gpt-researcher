@@ -178,3 +178,24 @@ class AgentConfig(BaseModel):
         if self.enable_web_search is True and self.reranking_profile is None:
             raise ValueError("Web search must be disabled when no reranker is specified")
         return self
+
+
+class Report(BaseModel):
+    id: str = Field(default=None)
+    user_id: str = Field(default=None)
+    base_id: str = Field(default=None)
+    agent_id: str = Field(default=None)
+    title: str = Field(default='')
+    report_style: str = Field(default='')
+    report_source: str = Field(default='')
+    published: bool = Field(default=False)
+
+
+class ReportSection(BaseModel):
+    id: str = Field(default=None)
+    report_id: str = Field(default=None)
+    title: str = Field(default='')
+    content: str = Field(default='')
+    order: int = Field(default=None)
+    guideline: str = Field(default='')
+    editable: bool = Field(default=False)

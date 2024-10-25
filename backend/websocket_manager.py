@@ -68,9 +68,7 @@ async def run_agent(task, task_id, report_type, report_style, report_source, sou
     config_path = ""
     # Instead of running the agent directly run it through the different report type classes
     if report_type == "multi_agents":
-        report = await run_research_task(query=task, task_id=task_id, websocket=websocket, stream_output=stream_output, tone=tone, headers=headers, report_style=report_style, source=report_source, source_urls=source_urls, agent_specialization=agent_specialization, base_id=base_id, agent_id=agent_id, prompts_from_db=prompts_from_db ,agent_conf=agent_conf)
-        #report = await run_research_task(query=task, websocket=websocket, stream_output=stream_output, tone=tone, headers=headers)
-        report = report.get("report", "")
+        return await run_research_task(query=task, task_id=task_id, websocket=websocket, stream_output=stream_output, tone=tone, headers=headers, report_style=report_style, source=report_source, source_urls=source_urls, agent_specialization=agent_specialization, base_id=base_id, agent_id=agent_id, prompts_from_db=prompts_from_db ,agent_conf=agent_conf)
     elif report_type == ReportType.DetailedReport.value:
         researcher = DetailedReport(
             query=task,
