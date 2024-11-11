@@ -1,9 +1,9 @@
 import logging
 from typing import Tuple, Union, List, Dict
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.common import create_rows
-from db.psql_tables import Reports, ReportSections
-from db.chat_agents import read_agent_conf_by_id, read_agent_conf
+from db.common import create_rows, update_row_by_id
+from db.psql_tables import Reports
+from db.chat_agents import read_agent_conf_by_id
 
 logger = logging.getLogger(__name__)
 
@@ -50,17 +50,19 @@ async def save_report(psql_sess: AsyncSession, report: Dict = None, returning: L
     return await create_rows(psql_sess, Reports, [report], returning)
 
 
-async def save_report_sections(psql_sess: AsyncSession, sections: List[dict]):
+async def update_report(psql_sess: AsyncSession, report: Dict = None, report_id: str = None, returning: List[str] = None):
     """
-    This async function saves report.
+        This async function saves report.
 
-    Args:
-        psql_sess (AsyncSession): psql connection session.
-        sections: sections to save
+        Args:
+            psql_sess (AsyncSession): psql connection session.
+            report: updated values
+            report_id: report id to update
+            returning: list of columns to return
 
-    Returns:
-        None
-    """
-    if not sections or not len(sections):
+        Returns:
+            the updated report
+        """
+    if not report or not report_id:
         return None
-    return await create_rows(psql_sess, ReportSections, sections)
+    return await update_row_by_id(psql_sess, Reports, report, report_id, returning)

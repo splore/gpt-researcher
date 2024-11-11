@@ -18,14 +18,13 @@ from backend.websocket_manager import WebSocketManager
 
 import shutil
 
-from db.report import save_sections
 from multi_agents.main import run_research_task
 from gpt_researcher.document.document import DocumentLoader
 from gpt_researcher.master.actions import stream_output
 from backend.aws_secret_manager import AWSecretsManager
 from backend.psql import PSQLSessionMgr
 from backend import ext_service_config
-from db.db_utils import get_agent, save_report
+from db.db_utils import get_agent, save_report, update_report
 from backend.entities import AgentConfig
 from db.get_prompts import read_prompt_template_by_prompts_id
 
@@ -116,15 +115,15 @@ async def websocket_endpoint(websocket: WebSocket, psql_sess: Annotated[AsyncSes
                 agent_conf = await get_agent(psql_sess=psql_sess, base_id=None, agent_id=agent_id, agent_name=None)
                 agent_conf = AgentConfig(**agent_conf)
                 specialization, prompts_from_db = await read_prompt_template_by_prompts_id(psql_sess=psql_sess, cols=["name", "template"], prompts_id=agent_conf.prompts_id)
-                task_id = await save_report(psql_sess=psql_sess, report={"user_id": user_id, "base_id": base_id, "agent_id": agent_id, "title": task, "report_style": report_style, "report_source": report_source, "published": False}, returning=['id'])
+                task_id = await save_report(psql_sess=psql_sess, report={"user_id": user_id, "base_id": base_id, "agent_id": agent_id, "title": task, "content": '', "report_style": report_style, "report_source": report_source, "published": False}, returning=['id'])
                 task_id, = task_id[0]
                 if task and report_type:
                     report = await manager.start_streaming(
                         task, task_id, report_type, report_style, report_source, source_urls, tone, websocket, headers, specialization,
                         base_id, agent_id, prompts_from_db, agent_conf
                     )
-                    await save_sections(psql_sess, report, task_id, report_style)
                     report = report.get("report", "")
+                    await update_report(psql_sess=psql_sess, report={"content": report}, report_id=task_id)
                     # Ensure report is a string
                     if not isinstance(report, str):
                         report = str(report)

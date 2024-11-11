@@ -186,16 +186,7 @@ class Report(BaseModel):
     base_id: str = Field(default=None)
     agent_id: str = Field(default=None)
     title: str = Field(default='')
+    content: str = Field(default='')
     report_style: str = Field(default='')
     report_source: str = Field(default='')
     published: bool = Field(default=False)
-
-
-class ReportSection(BaseModel):
-    id: str = Field(default=None)
-    report_id: str = Field(default=None)
-    title: str = Field(default='')
-    content: str = Field(default='')
-    order: int = Field(default=None)
-    guideline: str = Field(default='')
-    editable: bool = Field(default=False)
