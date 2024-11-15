@@ -104,4 +104,4 @@ Instructions:
         else:
             print_agent_output(output="Publishing final research report based on retrieved data...", agent="PUBLISHER")
         final_research_report = await self.publish_research_report(research_state, publish_formats, executive_summary)
-        return {"report": final_research_report}
+        return {"report": final_research_report, "executive_summary": executive_summary}

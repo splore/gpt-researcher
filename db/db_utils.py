@@ -1,10 +1,12 @@
 import logging
 from typing import Tuple, Union, List, Dict
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from db.chat_agents import read_agent_conf_by_id, read_agent_conf
+from db.common import create_rows, update_row_by_id
+from db.psql_tables import Reports
+from db.chat_agents import read_agent_conf_by_id
 
 logger = logging.getLogger(__name__)
+
 
 async def get_agent(psql_sess: AsyncSession, base_id: Union[str, None], agent_id: str = None,
                     agent_name: Union[str, None] = "splore") -> Tuple[dict, str, str, Union[str, None]]:
@@ -29,3 +31,38 @@ async def get_agent(psql_sess: AsyncSession, base_id: Union[str, None], agent_id
     agent_conf = await read_agent_conf_by_id(psql_sess, base_conf_cols, agent_id)
 
     return agent_conf
+
+
+async def save_report(psql_sess: AsyncSession, report: Dict = None, returning: List[str] = None):
+    """
+    This async function saves report.
+
+    Args:
+        psql_sess (AsyncSession): psql connection session.
+        report: report to save
+        returning: list of columns to return
+
+    Returns:
+        the id of the report saved
+    """
+    if not report:
+        return []
+    return await create_rows(psql_sess, Reports, [report], returning)
+
+
+async def update_report(psql_sess: AsyncSession, report: Dict = None, report_id: str = None, returning: List[str] = None):
+    """
+        This async function saves report.
+
+        Args:
+            psql_sess (AsyncSession): psql connection session.
+            report: updated values
+            report_id: report id to update
+            returning: list of columns to return
+
+        Returns:
+            the updated report
+        """
+    if not report or not report_id:
+        return None
+    return await update_row_by_id(psql_sess, Reports, report, report_id, returning)
