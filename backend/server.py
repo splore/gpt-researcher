@@ -117,6 +117,7 @@ async def websocket_endpoint(websocket: WebSocket, psql_sess: Annotated[AsyncSes
                 specialization, prompts_from_db = await read_prompt_template_by_prompts_id(psql_sess=psql_sess, cols=["name", "template"], prompts_id=agent_conf.prompts_id)
                 task_id = await save_report(psql_sess=psql_sess, report={"user_id": user_id, "base_id": base_id, "agent_id": agent_id, "title": task, "content": '', "report_style": report_style, "report_source": report_source, "published": False}, returning=['id'])
                 task_id, = task_id[0]
+                await websocket.send_json({"type": "task_id", "output": task_id})
                 if task and report_type:
                     report = await manager.start_streaming(
                         task, task_id, report_type, report_style, report_source, source_urls, tone, websocket, headers, specialization,
